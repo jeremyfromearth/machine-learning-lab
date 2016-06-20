@@ -4,8 +4,8 @@ from math import sqrt
 class LinearRegressionModel:
     def __init__(self):
         self.weights = []
-        self.eta = 9e-4
-        self.tolerance = 1e-2
+        self.eta = 0.001
+        self.tolerance = 0.01
         self.iterations = 0
 
     def learn(self, data, features, target):
@@ -21,13 +21,14 @@ class LinearRegressionModel:
         while gradient_magnitude > self.tolerance:
             # y-hat
             predictions = self.predict(data, features)
-            # errors
+            # difference between predictions and output
             residuals = predictions - data[target]
             # accumulator for for gradient sum of squares
             gradient_sum_squares = 0.0
             # y-intercept
             self.weights[0] -= np.sum(residuals) * self.eta
-            # feature by features update
+            
+            # feature by feature update the weights
             for i in range(len(features)):
                 # feature at i
                 xi = data[features[i]]
@@ -63,3 +64,7 @@ if __name__ == '__main__':
     test = pd.DataFrame(data=list(zip([11.0], [24.0])), columns=['x', 'y'])
     predictions = model.predict(test, features)
     print('Predictions: {}, Iterations; {}, Weights: {}'.format(predictions, model.iterations, model.weights))
+    
+
+
+    
