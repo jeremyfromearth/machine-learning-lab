@@ -8,6 +8,7 @@ class LinearRegressionModel:
         self.tolerance = 0.01
         self.iterations = 0
         self.rss = []
+        self.gradient_magnitudes = []
 
     def learn(self, data, features, target):
         # initialize member variables
@@ -18,6 +19,7 @@ class LinearRegressionModel:
         # initialize gradient mag
         # this is a measure of the magnitude of the gradient of the aproximated function
         gradient_magnitude = float('inf')
+        self.gradient_magnitudes = []
 
         # gradient descent
         while gradient_magnitude > self.tolerance:
@@ -45,6 +47,7 @@ class LinearRegressionModel:
             self.rss.append(np.sum(residuals ** 2))
             # measure the gradient
             gradient_magnitude = sqrt(gradient_sum_squares)
+            self.gradient_magnitudes.append(gradient_magnitude)
             # increment the iterations
             self.iterations += 1
 
