@@ -3,7 +3,7 @@ from operator import itemgetter
 import numpy as np
 import sys
 
-class KMeans(object):
+class KMeansModel(object):
     '''
     K-Means model
     '''

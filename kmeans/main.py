@@ -1,9 +1,8 @@
 import sys
 import numpy as np
-from kmeans import KMeans
+from kmeans import KMeansModel
 from collections import deque
 from matplotlib import pyplot as plt
-from matplotlib import style
 
 # Clean up the raw data and create the dataset
 data = []
@@ -19,7 +18,7 @@ for line in lines:
 
 # Create a new k-means model and run it
 k = int(sys.argv[2])
-model = KMeans(data)
+model = KMeansModel(data)
 model.run(k)
 
 # Create a simple visualization using Matplotlib
