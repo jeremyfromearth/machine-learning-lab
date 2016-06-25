@@ -25,7 +25,7 @@ class KMeansModel(object):
             self.maxX = max(x, self.maxX)
             self.maxY = max(y, self.maxY)
 
-    def run(self, k):
+    def learn(self, k):
         convergence = False
         self.iterations = 0
         self.means = [np.array([rand(self.minX, self.maxX), rand(self.minY, self.maxY)]) for x in range(k)]
