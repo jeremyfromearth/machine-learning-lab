@@ -7,12 +7,12 @@ class KMeansModel(object):
         self.clusters = {}
         self.iterations = 0
         self.max_iterations = 1024
+        self.initializer = ForgyKmeansInitializer()
 
     def learn(self, data, k):
         convergence = False
         self.iterations = 0
-        random_indices = np.random.randint(0, data.shape[0], k)
-        self.means = [data[i] for i in random_indices]
+        self.means = self.initializer.get_initial_means(data, k)
         while convergence is False:
             self.iterations += 1
             self.clusters = {i : [] for i in range(0, k)}
@@ -46,3 +46,10 @@ class KMeansModel(object):
             if self.iterations >= self.max_iterations or np.array_equal(self.means, new_means):
                 convergence = True
             self.means = new_means
+
+class ForgyKMeansInitializer:
+    def get_initial_means(self, data, k):
+        random_indices = np.random.randint(0, data.shape[0], k)
+        return [data[i] for i in random_indices]
+
+
