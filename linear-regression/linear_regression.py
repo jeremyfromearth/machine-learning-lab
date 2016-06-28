@@ -53,3 +53,9 @@ class LinearRegressionModel:
 
     def predict(self, data, features):
         return np.dot(data[features], self.weights[1:]) + self.weights[0]
+
+    def get_squared_error_loss(self, data, features, target):
+        predictions = self.predict(data, features)
+        errors = data[target] - predictions
+        return (1.0 / len(data)) * np.sum(errors **2)
+
