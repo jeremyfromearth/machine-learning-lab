@@ -1,38 +1,21 @@
-from random import randrange as rand
-from operator import itemgetter
-import numpy as np
 import sys
+import numpy as np
 
 class KMeansModel(object):
-    '''
-    K-Means model
-    '''
-    def __init__(self, data):
-        self.data = data
+    def __init__(self):
         self.means = []
         self.clusters = {}
         self.iterations = 0
         self.max_iterations = 1024
-        self.maxX = -float('inf')
-        self.maxY = -float('inf')
-        self.minX = float('inf')
-        self.minY = float('inf')
-        for v in self.data:
-            x = float(v[0])
-            y = float(v[1])
-            self.minX = min(x, self. minX)
-            self.minY = min(y, self. minY)
-            self.maxX = max(x, self.maxX)
-            self.maxY = max(y, self.maxY)
 
-    def learn(self, k):
+    def learn(self, data, k):
         convergence = False
         self.iterations = 0
-        self.means = [np.array([rand(self.minX, self.maxX), rand(self.minY, self.maxY)]) for x in range(k)]
+        self.means = [np.zeros(data.shape[1]) for x in range(k)]
         while convergence is False:
             self.iterations += 1
-            self.clusters = {i : [] for i in range(0,k)}
-            for v in self.data:
+            self.clusters = {i : [] for i in range(0, k)}
+            for v in data:
                 cluster = -1
                 distance = float('inf')
                 for i in range(len(self.means)):
@@ -46,7 +29,7 @@ class KMeansModel(object):
             new_means = []        
             for key in self.clusters:
                 # Sum the vectors in each cluster
-                summed = np.zeros(2, dtype=np.float)
+                summed = np.zeros(data.shape[1], dtype=np.float)
                 cluster = self.clusters[key]
                 for v in cluster:
                     summed += v
