@@ -7,7 +7,7 @@ class KMeansModel(object):
         self.clusters = {}
         self.iterations = 0
         self.max_iterations = 1024
-        self.initializer = ForgyKmeansInitializer()
+        self.initializer = ForgyKMeansInitializer()
 
     def learn(self, data, k):
         convergence = False
@@ -26,12 +26,11 @@ class KMeansModel(object):
                         cluster = i
                 self.clusters[cluster].append(v)
 
-            # Create a list to store the new means
+            # Compute the new means
             new_means = []        
-            for key in self.clusters:
+            for key, cluster in self.clusters.items():
                 # Sum the vectors in each cluster
                 summed = np.zeros(data.shape[1], dtype=np.float)
-                cluster = self.clusters[key]
                 for v in cluster:
                     summed += v
                
