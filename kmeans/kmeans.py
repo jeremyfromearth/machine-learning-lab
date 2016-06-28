@@ -11,7 +11,8 @@ class KMeansModel(object):
     def learn(self, data, k):
         convergence = False
         self.iterations = 0
-        self.means = [np.zeros(data.shape[1]) for x in range(k)]
+        random_indices = np.random.randint(0, data.shape[0], k)
+        self.means = [data[i] for i in random_indices]
         while convergence is False:
             self.iterations += 1
             self.clusters = {i : [] for i in range(0, k)}
@@ -40,7 +41,8 @@ class KMeansModel(object):
                     new_means.append(summed / np.array([count, count]))
                 else:
                     new_means.append(self.means[key])
-            
+             
             # If the new means are the same as the old, the algorithm has converged
-            convergence = np.array_equal(self.means, new_means)
+            if self.iterations >= self.max_iterations or np.array_equal(self.means, new_means):
+                convergence = True
             self.means = new_means
