@@ -9,9 +9,10 @@ class KMeansModel(object):
         self.max_iterations = 1024
         self.initializer = ForgyKMeansInitializer()
 
-    def learn(self, data, k):
+    def learn(self, dataframe, features, k):
         convergence = False
         self.iterations = 0
+        data = dataframe[features].as_matrix()
         self.means = self.initializer.get_initial_means(data, k)
         while convergence is False:
             self.iterations += 1

@@ -34,8 +34,8 @@ class LinearRegressionModel:
             
             # feature by feature update the weights
             for i in range(len(features)):
-                # feature at i
-                xi = data[features[i]]
+                # feature at i, convert to nparray - it's faster
+                xi = data[features[i]].values
                 # the partial derivate with respect to xi
                 partial = 2 * np.dot(residuals, xi) 
                 # add the partial squared
