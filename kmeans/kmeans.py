@@ -28,7 +28,7 @@ class KMeansModel(object):
                 self.clusters[cluster].append(v)
 
             # Compute the new means
-            new_means = []        
+            new_means = []
             for key, cluster in self.clusters.items():
                 # Sum the vectors in each cluster
                 summed = np.zeros(data.shape[1], dtype=np.float)
@@ -46,7 +46,21 @@ class KMeansModel(object):
             if self.iterations >= self.max_iterations or np.array_equal(self.means, new_means):
                 convergence = True
             self.means = new_means
-
+            
+    def predict(self, dataframe, features):
+        result = []
+        data = dataframe[features].as_matrix()
+        for v in data:
+            cluster = None
+            delta = float('inf')
+            for i in range(len(self.means)):
+                d = np.linalg.norm(v - self.means[i])
+                if d < delta:
+                    cluster = i
+                    delta = d
+            result.append(cluster)
+        return result
+                
 class ForgyKMeansInitializer:
     def get_initial_means(self, data, k):
         random_indices = np.random.randint(0, data.shape[0], k)
