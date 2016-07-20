@@ -3,9 +3,10 @@ import numpy as np
 
 class KMeansModel(object):
     def __init__(self):
-        self.means = []
+        self.means = [] 
         self.clusters = {}
         self.iterations = 0
+        self.quality_history = []
         self.max_iterations = 1024
         self.initializer = ForgyKMeansInitializer()
 
@@ -15,6 +16,7 @@ class KMeansModel(object):
         data = dataframe[features].as_matrix()
         self.means = self.initializer.get_initial_means(data, k)
         while convergence is False:
+            quality = 0
             self.iterations += 1
             self.clusters = {i : [] for i in range(0, k)}
             for v in data:
@@ -22,10 +24,12 @@ class KMeansModel(object):
                 distance = float('inf')
                 for i in range(len(self.means)):
                     d = np.linalg.norm(v - self.means[i])
+                    quality += d
                     if d < distance:
                         distance = d
                         cluster = i
                 self.clusters[cluster].append(v)
+            self.quality_history.append(quality)
 
             # Compute the new means
             new_means = []
@@ -80,7 +84,3 @@ class KMeansPlusPlusInitializer:
                         distance = new_distance 
             means.append(new_mean)
         return means
-
-
-        
-
