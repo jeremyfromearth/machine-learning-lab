@@ -66,4 +66,21 @@ class ForgyKMeansInitializer:
         random_indices = np.random.randint(0, data.shape[0], k)
         return [data[i] for i in random_indices]
 
+class KMeansPlusPlusInitializer:
+    def get_initial_means(self, data, k):
+        means = [data[np.random.randint(0, data.shape[0])]]
+        while(len(means) < k):
+            distance = 0
+            new_mean = None
+            for d in data:
+                for mean in means:
+                    new_distance = np.linalg.norm(mean - d) ** 2
+                    if new_distance > distance:
+                        new_mean = d
+                        distance = new_distance 
+            means.append(new_mean)
+        return means
+
+
+        
 
