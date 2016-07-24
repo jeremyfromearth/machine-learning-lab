@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 # data vars
 count = 0
-limit = 1
+limit = 20
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
@@ -79,11 +79,14 @@ while len(article_search_space) > 0 and count < limit:
         if 'query' in data and 'pages' in data['query']:
             node = data['query']['pages']
             article_page_id = list(node.keys())[0]
+            # clean up the text a bit
             article_text = data['query']['pages'][article_page_id]['extract']
+            article_text = article_text.split('== References ==')[0]
+            article_text = article_text.split('== Literature ==')[0]
 
         # links
         link_count = 0
-        if len(article_search_space) < 1000:
+        if len(article_search_space) < limit:
             url = api + '?action=query&prop=links&format=json&pllimit=500&titles=' + article_title
             req = requests.get(url)
             if req.status_code is not 200: continue
@@ -115,8 +118,6 @@ while len(article_search_space) > 0 and count < limit:
         count += 1
         new_articles.append(new_article)
         article_titles_saved.add(article_title)
-    else:
-        print('No taxonomy')
 
 # merge the new data with the 
 new_data = pd.DataFrame(new_articles)
