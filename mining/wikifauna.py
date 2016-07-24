@@ -3,10 +3,11 @@ import urllib
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+from zipfile import ZipFile
 
 # data vars
 count = 0
-limit = 500
+limit = 10
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
@@ -24,12 +25,14 @@ taxonomic_rank = [
 
 # open the existing data file and add existing titles to list of previously searched titles
 try: 
-    df = pd.read_csv('../data/fauna.csv')
+    df = pd.read_csv('../data/fauna.csv.gz', compression='gzip')
     article_titles_searched.update(df['title'].tolist())
     print('Opened existing data file with {} record(s)'.format(len(df)))
 except:
     df = pd.DataFrame(columns=['title', 'page-id', 'text'] + taxonomic_rank)
     print('No existing data file found.')
+
+#sys.exit()
 
 # get a list of articles that we know have the 'Speciesbox' and seed the search space
 print('Mining with limit of {} new records'.format(limit))
@@ -113,4 +116,4 @@ while len(article_search_space) > 0 and count < limit:
 # merge the new data with the 
 new_data = pd.DataFrame(new_articles)
 df = df.append(new_data)
-df.to_csv('../data/fauna.csv', index=False)
+df.to_csv('../data/fauna.csv.gz', compression='gzip', index=False)
