@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 # data vars
 count = 0
-limit = 10
+limit = 1
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
@@ -32,15 +32,13 @@ except:
     df = pd.DataFrame(columns=['title', 'page-id', 'text'] + taxonomic_rank)
     print('No existing data file found.')
 
-#sys.exit()
-
 # get a list of articles that we know have the 'Speciesbox' and seed the search space
 print('Mining with limit of {} new records'.format(limit))
 req = requests.get(api + '?action=query&list=embeddedin&eititle=Template:Speciesbox&eilimit=500&format=json');
 json = req.json()
 if 'query' in json and 'embeddedin' in json['query']:
     for obj in json['query']['embeddedin']:
-        if obj['title']: 
+        if obj['title'] and obj['title'] not in article_titles_searched:
             article_search_space.add(obj['title'])
 print('Initial search space has {} records to mine'.format(len(article_search_space)))
 
@@ -69,8 +67,8 @@ def get_taxonomy_for_article(title):
 while len(article_search_space) > 0 and count < limit:
     article_title = article_search_space.pop()
     article_titles_searched.add(article_title)
-    print('Evaluating taxonomy for {}'.format(article_title))
     taxonomy = get_taxonomy_for_article(article_title)
+    print('Searching for {}'.format(article_title))
     if taxonomy is not None:
         # text
         url = api + '?format=json&action=query&prop=extracts&explaintext=&titles=' + article_title
@@ -84,24 +82,29 @@ while len(article_search_space) > 0 and count < limit:
             article_text = data['query']['pages'][article_page_id]['extract']
 
         # links
-        url = api + '?action=query&prop=links&format=json&pllimit=500&titles=' + article_title
-        req = requests.get(url)
-        if req.status_code is not 200: continue
-        links = req.json()
-        if 'query' in links and 'pages' in links['query']:
-            node = links['query']['pages']
-            keys = node.keys()
-            for key in keys:
-                if 'links' in node[key]:
-                    for link in node[key]['links']:
-                        if 'title' in link:
-                            new_title = link['title']
-                            if new_title not in article_titles_searched:
-                                if 'Template' not in new_title:
-                                    article_search_space.add(link['title'])
+        link_count = 0
+        if len(article_search_space) < 1000:
+            url = api + '?action=query&prop=links&format=json&pllimit=500&titles=' + article_title
+            req = requests.get(url)
+            if req.status_code is not 200: continue
+            links = req.json()
+            if 'query' in links and 'pages' in links['query']:
+                node = links['query']['pages']
+                keys = node.keys()
+                for key in keys:
+                    if 'links' in node[key]:
+                        for link in node[key]['links']:
+                            if 'title' in link:
+                                new_title = link['title']
+                                if new_title not in article_titles_searched:
+                                    if 'Template' not in new_title:
+                                        link_count += 1
+                                        article_search_space.add(link['title'])
 
         # save the new article
-        print('Saving {}'.format(article_title))
+        print(article_title)
+        print('Adding {} new article titles'.format(link_count))
+        print('New search space has {} titles'.format(len(article_search_space)))
         new_article = {'title' : article_title, 'page-id' : article_page_id, 'text' : article_text}
         for rank in taxonomic_rank:
             if rank in taxonomy:
@@ -112,8 +115,11 @@ while len(article_search_space) > 0 and count < limit:
         count += 1
         new_articles.append(new_article)
         article_titles_saved.add(article_title)
+    else:
+        print('No taxonomy')
 
 # merge the new data with the 
 new_data = pd.DataFrame(new_articles)
 df = df.append(new_data)
 df.to_csv('../data/fauna.csv.gz', compression='gzip', index=False)
+print('Completed with {} records'.format(len(df)))
