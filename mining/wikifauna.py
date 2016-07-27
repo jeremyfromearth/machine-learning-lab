@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 # data vars
 count = 0
-limit = 20
+limit = 10000
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
@@ -25,7 +25,7 @@ taxonomic_rank = [
 
 # open the existing data file and add existing titles to list of previously searched titles
 try: 
-    df = pd.read_csv('../data/fauna.csv.gz', compression='gzip')
+    df = pd.read_csv('./data/fauna.csv.gz', compression='gzip')
     article_titles_searched.update(df['title'].tolist())
     print('Opened existing data file with {} record(s)'.format(len(df)))
 except:
@@ -122,5 +122,5 @@ while len(article_search_space) > 0 and count < limit:
 # merge the new data with the 
 new_data = pd.DataFrame(new_articles)
 df = df.append(new_data)
-df.to_csv('../data/fauna.csv.gz', compression='gzip', index=False)
+df.to_csv('./data/fauna.csv.gz', compression='gzip', index=False)
 print('Completed with {} records'.format(len(df)))
