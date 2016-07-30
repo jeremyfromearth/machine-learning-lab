@@ -123,6 +123,6 @@ while len(article_search_space) > 0 and count < limit:
 # merge the new data with the 
 new_data = pd.DataFrame(new_articles)
 df = df.append(new_data)
-df.drop_duplicates()
+df = df.drop_duplicates()
 df.to_csv('./data/fauna.csv.gz', compression='gzip', index=False)
 print('Completed with {} records'.format(len(df)))
