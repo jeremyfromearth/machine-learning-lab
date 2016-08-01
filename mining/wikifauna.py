@@ -69,6 +69,7 @@ def go():
     while len(article_search_space) > 0 and count < limit:
         article_title = article_search_space.pop()
         if article_title not in article_titles_searched:
+            print('Looking up:', article_title)
             taxonomy = get_taxonomy_for_article(article_title)
             if taxonomy is not None:
                 # text
@@ -77,54 +78,59 @@ def go():
                 if req.status_code is not 200: continue
                 data = req.json()
                 article_text = ''
-                if 'query' in data and 'pages' in data['query']:
-                    node = data['query']['pages']
-                    article_page_id = list(node.keys())[0]
-                    # clean up the text a bit
-                    article_text = data['query']['pages'][article_page_id]['extract']
-                    article_text = article_text.split('== References ==')[0]
-                    article_text = article_text.split('== Literature ==')[0]
+                try:
+                    if 'query' in data and 'pages' in data['query']:
+                        node = data['query']['pages']
+                        article_page_id = list(node.keys())[0]
+                        # clean up the text a bi
+                        article_text = data['query']['pages'][article_page_id]['extract']
+                        article_text = article_text.split('== References ==')[0]
+                        article_text = article_text.split('== Literature ==')[0]
 
-                    # save the new article
-                    article_titles_searched.add(article_title)
-                    new_article = {'title' : article_title, 'page-id' : article_page_id, 'text' : article_text}
-                    for rank in taxonomic_rank:
-                        if rank in taxonomy:
-                            new_article[rank] = taxonomy[rank]
-                        else:
-                            new_article[rank] = ''
+                        # save the new article
+                        article_titles_searched.add(article_title)
+                        new_article = {'title' : article_title, 'page-id' : article_page_id, 'text' : article_text}
+                        for rank in taxonomic_rank:
+                            if rank in taxonomy:
+                                new_article[rank] = taxonomy[rank]
+                            else:
+                                new_article[rank] = ''
 
-                    count += 1
-                    new_articles.append(new_article)
-                    article_titles_saved.add(article_title)
-                    print('Adding', article_title, 'to corpus')
-                    if (count % 10) == 0:
-                        print('Corpus size:', len(new_articles) + len(df))
+                        count += 1
+                        new_articles.append(new_article)
+                        article_titles_saved.add(article_title)
+                        print('Adding', article_title, 'to corpus')
+                        new_corpus_size = len(new_articles) + len(df)
+                        if new_corpus_size % 10 == 0:
+                            print('Corpus size:', new_corpus_size)
+                except:
+                    print('Error adding', article_title)
             
-        # links
-        link_count = 0
-        if len(article_search_space) < 1000:
-            url = api + '?action=query&prop=links&format=json&pllimit=500&titles=' + article_title
-            req = requests.get(url)
-            if req.status_code is not 200: continue
-            links = req.json()
-            if 'query' in links and 'pages' in links['query']:
-                node = links['query']['pages']
-                keys = node.keys()
-                for key in keys:
-                    if 'links' in node[key]:
-                        for link in node[key]['links']:
-                            if 'title' in link:
-                                new_title = link['title']
-                                if new_title not in article_titles_searched:
-                                    if 'Template' not in new_title:
-                                        link_count += 1
-                                        article_search_space.add(link['title'])
+                # links
+                link_count = 0
+                if len(article_search_space) < 20000:
+                    url = api + '?action=query&prop=links&format=json&pllimit=500&titles=' + article_title
+                    req = requests.get(url)
+                    if req.status_code is not 200: continue
+                    links = req.json()
+                    if 'query' in links and 'pages' in links['query']:
+                        node = links['query']['pages']
+                        keys = node.keys()
+                        for key in keys:
+                            if 'links' in node[key]:
+                                for link in node[key]['links']:
+                                    if 'title' in link:
+                                        new_title = link['title']
+                                        if new_title not in article_titles_searched:
+                                            if 'Template' not in new_title:
+                                                link_count += 1
+                                                article_search_space.add(link['title'])
+                    print('Added {} new articles to search space'.format(link_count))
 
 if __name__ == '__main__':
     try: 
         go()
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, Exception) as e:
         # merge the new data with the 
         new_data = pd.DataFrame(new_articles)
         df = df.append(new_data)
