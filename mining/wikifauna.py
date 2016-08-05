@@ -33,6 +33,8 @@ except:
 
 
 # get a list of articles that we know have the 'Speciesbox' and seed the search space
+# a bit of a hack, ask for a list of articles from the api that contain a "SpeciesBox" template
+# this provides a great starting place for finding new species
 print('Mining with limit of {} new records'.format(limit))
 req = requests.get(api + '?action=query&list=embeddedin&eititle=Template:Speciesbox&eilimit=500&format=json');
 json = req.json()
@@ -42,7 +44,7 @@ if 'query' in json and 'embeddedin' in json['query']:
             article_search_space.add(obj['title'])
 print('Initial search space has {} records to mine'.format(len(article_search_space)))
 
-# pull up wikipedia article and scrape out the infobox with taxonomy info
+# fetch wikipedia article and scrape out the infobox with taxonomy info
 def get_taxonomy_for_article(title):
     r = requests.get(wiki + 'wiki/' + title)
     soup = BeautifulSoup(r.content)
@@ -61,10 +63,10 @@ def get_taxonomy_for_article(title):
         if 'kingdom' in taxonomy: 
             if taxonomy['kingdom'] == 'animalia':
                 return taxonomy
-            
+
+# mine through articles and scrape links to other articles
+# save any article that appears to be an animal species along the way        
 def go():
-    # mine through articles and scrape links to other articles
-    # saving anything that appears to be an animal species along the way
     count = 0
     while len(article_search_space) > 0 and count < limit:
         article_title = article_search_space.pop()
@@ -82,7 +84,8 @@ def go():
                     if 'query' in data and 'pages' in data['query']:
                         node = data['query']['pages']
                         article_page_id = list(node.keys())[0]
-                        # clean up the text a bi
+
+                        # clean up the text a bio
                         article_text = data['query']['pages'][article_page_id]['extract']
                         article_text = article_text.split('== References ==')[0]
                         article_text = article_text.split('== Literature ==')[0]
@@ -127,6 +130,8 @@ def go():
                                                 article_search_space.add(link['title'])
                     print('Added {} new articles to search space'.format(link_count))
 
+# run the script
+# if the script is interupted by ctrl+c, save all data
 if __name__ == '__main__':
     try: 
         go()
