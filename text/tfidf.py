@@ -1,18 +1,17 @@
+import re
+import numpy as np
 import pandas as pd
 
-
 def tfidf(corpus):
-    doc_freq = {}
     term_freq = {}
-    
-    for index in corpus:
+    for index, row in corpus.iterrows():
         if index in term_freq:
-            terms = terms = term_freq[index]
+            terms = term_freq[index]
         else:
             terms = term_freq[index] = {}
-    
-        s = str(corpus[index]).lower()
-        word_list = re.findall(r'\b[^\W\d_]+\b', s)
+
+        s = str(row['text']).lower()
+        word_list = re.findall(r'\b[^\W\d_]+\b', s) 
 
         for word in word_list:
             if word in terms:
@@ -20,8 +19,9 @@ def tfidf(corpus):
             else:
                 terms[word] = 1
 
-            if word in doc_freq:
-                doc_freq[word].add(index)
-            else:
-                doc_freq[word] = set()
-                doc_freq[word].add(index)
+    tf = pd.DataFrame(term_freq)    # create a DataFrame of the term frequencies
+    tf = tf.fillna(0)               # fill missing values with zero
+    tf = tf.apply(lambda x : x / np.sqrt(np.sum(np.power(x.values, 2)))) # normalize each row so that it's magnitude == 1.0
+    idf = tf.astype(bool).sum(axis=1).apply(lambda x : np.log(tf.shape[1] / (1 + x))) # inverse document frequency
+    tfidf = pd.DataFrame(tf.values.T * idf.values, index=tf.columns, columns=idf.index)
+    return tfidf
