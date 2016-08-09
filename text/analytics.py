@@ -55,5 +55,4 @@ class TermFreqInverseDocFreq:
             pd.DataFrame(
                 self.term_frequency.values.T * self.inverse_document_frequency.values, 
                 index=self.term_frequency.columns, columns=self.inverse_document_frequency.index)
-        
         print('TFIDF DataFrame created')
