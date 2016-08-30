@@ -4,36 +4,57 @@ import pandas as pd
 
 class TermFreqInverseDocFreq:
     def __init__(self):
+        self.document_ids = None
+        self.unique_words = None
         self.term_frequency = None
         self.document_frequency = None
         self.inverse_document_frequency = None
         self.word_count_over_iterations = []
-        self.tfidf = None
+        self.table = None
 
     def create(self, corpus, text_column, normalize = True):
         term_freq = {}
+        unique_words = set()
+        text = {}
         for index, row in corpus.iterrows():
-            if index in term_freq:
-                terms = term_freq[index]
-            else:
-                terms = term_freq[index] = {}
-
             s = str(row[text_column]).lower()
             word_list = re.findall(r'\b[^\W\d_]+\b', s) 
+            text[index] = word_list
 
             for word in word_list:
-                if word in terms:
-                    terms[word] += 1
-                else:
-                    terms[word] = 1
-            self.word_count_over_iterations.append(len(terms))
-        max = 0
-        for k, v in term_freq.items():
-            if len(v) > max:
-                max = len(v)
+                unique_words.add(word)
 
+            self.word_count_over_iterations.append(len(unique_words))
+
+        print('unique_words created')
+
+        self.unique_words = sorted(list(unique_words))
+        for index, row in corpus.iterrows():
+            terms = np.zeros(len(self.unique_words))
+            for word in text[index]:
+                terms[self.unique_words.index(word)] += 1
+            term_freq[index] = terms
+            print('term_freq created for document', index)
+
+        print(len(term_freq), len(term_freq[38082824]))
+        print(unique_words)
+        
+        '''
         print('Term frequency dict created')
-        # create a DataFrame of the term frequencies
+        self.document_ids = list(term_freq.keys())
+
+        tf = []
+        self.all_words = sorted(list(unique_words))
+        for id in self.document_ids:
+            counts = []
+            for word in self.all_words:
+                count = term_freq[id][word] if word in term_freq[id] else 0
+            tf.append(counts)
+            
+        print(len(tf), len(tf[0]))
+        '''
+
+        '''
         self.term_frequency = pd.DataFrame(term_freq)    
         print('Term frequency DataFrame created')
         # fill missing values with zero
@@ -51,8 +72,9 @@ class TermFreqInverseDocFreq:
             self.document_frequency.apply(lambda x : np.log(self.term_frequency.shape[1] / (1 + x))) 
         print('Inverse document frequency DataFrame created')
         # create the tfidf
-        self.tfidf = \
+        self.table = \
             pd.DataFrame(
                 self.term_frequency.values.T * self.inverse_document_frequency.values, 
                 index=self.term_frequency.columns, columns=self.inverse_document_frequency.index)
         print('TFIDF DataFrame created')
+        '''
