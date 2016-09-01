@@ -15,6 +15,29 @@ class TermFreqInverseDocFreq:
         self.table = None
 
     def create(self, corpus, text_column, normalize = True):
+        vocab = {} 
+        data = []
+        indptr = [0]
+        indices = []
+        page_id_to_index = {}
+        for page_id, row in corpus.iterrows():
+            s = str(row[text_column]).lower()
+            word_list = re.findall(r'\b[^\W\d_]+\b', s)
+            page_id_to_index.setdefault(page_id, len(page_id_to_index))
+            for word in word_list:
+                index = vocab.setdefault(word, len(vocab))
+                indices.append(index)
+                data.append(1)
+            indptr.append(len(indices))
+            print(page_id_to_index[page_id], '-', page_id)
+        sparse = csr_matrix((data, indices, indptr), dtype=np.float)
+
+        # Test should print 2.0
+        page_index = page_id_to_index[1709509]
+        word_index = vocab['tagua']
+        print(sparse[page_index, word_index])
+
+        '''
         text = {}
         unique_words = set()
         for page_id, row in corpus.iterrows():
@@ -40,7 +63,10 @@ class TermFreqInverseDocFreq:
                 self.term_frequency[n][reverse_word_lookup[word]] += 1
             print('Page', page_id, '-', n, 'processed')
             n += 1
-       
+        '''
+        
+
+        '''
         sparse = csr_matrix(self.term_frequency, dtype=np.float)
         print(sys.getsizeof(self.term_frequency))
         print(sys.getsizeof(sparse))
@@ -51,7 +77,6 @@ class TermFreqInverseDocFreq:
         word_index = reverse_word_lookup[word]
         print(sparse[page_index, word_index])
 
-        '''
         if normalize:
             np.apply_along_axis(lambda x : x / np.sqrt(np.sum(np.power(x, 2))), 1, self.term_frequency)
             print('Term frequency normalized')
