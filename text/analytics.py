@@ -14,6 +14,7 @@ class TermFreqInverseDocFreq:
         self.table = None
 
     def create(self, corpus, text_column, normalize = True):
+        print('create()')
         data = []
         indptr = [0]
         indices = []
@@ -36,7 +37,7 @@ class TermFreqInverseDocFreq:
 
             indptr.append(len(indices))
             self.word_count_over_iterations.append(len(self.terms))
-       
+        
         # create a sparse matrix representation of the term frequencies
         #
         # page-id, a, as, be, both
@@ -44,27 +45,25 @@ class TermFreqInverseDocFreq:
         # 0948333, 2,  3,  5,    1
         # 
         self.term_frequency = csr_matrix((data, indices, indptr), dtype=np.float)
+        print('Term frequency created')
+
+        if normalize:
+            tf = self.term_frequency 
+            self.term_frequency = tf.multiply(csr_matrix(1/np.sqrt(tf.multiply(tf).sum(1))))
+            print('Term frequency normalized')
 
         # create a document frequency representation
         self.document_frequency = np.ndarray(shape=(1, len(self.terms)), dtype=np.float)
         for word, index in self.terms.items():
             self.document_frequency[0, index] = len(document_frequency[word])
+        print('Document frequency created') 
 
-        '''
-        if normalize:
-            np.apply_along_axis(lambda x : x / np.sqrt(np.sum(np.power(x, 2))), 1, self.term_frequency)
-            print('Term frequency normalized')
-        '''
-
-        from math import log
-        def get_inverse(x):
-            return log(self.term_frequency.shape[0] / (1 +x))
-
-        get_inverse_vectorized = np.vectorize(get_inverse)
-        self.inverse_document_frequency = csr_matrix(get_inverse_vectorized(self.document_frequency))
+        self.inverse_document_frequency = csr_matrix(np.apply_along_axis(\
+            lambda x : np.log(self.term_frequency.shape[0] / (1 + x)), 1, self.document_frequency))
         self.tfidf = self.term_frequency.multiply(self.inverse_document_frequency)
+        print('TFIDF created')
 
-        word = 'antelope'
+        word = 'at'
         page_id = 1369072
         page_index = page_id_to_index[page_id]
         word_index = self.terms[word]
