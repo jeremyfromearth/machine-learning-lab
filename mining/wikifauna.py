@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from zipfile import ZipFile
 
 # data vars
-limit = 100000
+limit = 120000
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
@@ -60,7 +60,7 @@ def get_taxonomy_for_article(title):
                 classification = cells[1].text.lower()
                 classification = re.sub(r'\W+', '', classification)
                 taxonomy[label] = classification
-        if 'kingdom' in taxonomy: 
+        if 'kingdom' in taxonomy and 'class' in taxonomy and 'species' in taxonomy and 'order' in taxonomy:
             if taxonomy['kingdom'] == 'animalia':
                 return taxonomy
 
@@ -91,21 +91,22 @@ def go():
                         article_text = article_text.split('== Literature ==')[0]
 
                         # save the new article
-                        article_titles_searched.add(article_title)
-                        new_article = {'title' : article_title, 'page-id' : article_page_id, 'text' : article_text}
-                        for rank in taxonomic_rank:
-                            if rank in taxonomy:
-                                new_article[rank] = taxonomy[rank]
-                            else:
-                                new_article[rank] = ''
+                        if article_text is not '':
+                            article_titles_searched.add(article_title)
+                            new_article = {'title' : article_title, 'page-id' : article_page_id, 'text' : article_text}
+                            for rank in taxonomic_rank:
+                                if rank in taxonomy:
+                                    new_article[rank] = taxonomy[rank]
+                                else:
+                                    new_article[rank] = ''
 
-                        count += 1
-                        new_articles.append(new_article)
-                        article_titles_saved.add(article_title)
-                        print('Adding', article_title, 'to corpus')
-                        new_corpus_size = len(new_articles) + len(df)
-                        if new_corpus_size % 10 == 0:
-                            print('Corpus size:', new_corpus_size)
+                            count += 1
+                            new_articles.append(new_article)
+                            article_titles_saved.add(article_title)
+                            print('Adding', article_title, 'to corpus')
+                            new_corpus_size = len(new_articles) + len(df)
+                            if new_corpus_size % 10 == 0:
+                                print('Corpus size:', new_corpus_size)
                 except:
                     print('Error adding', article_title)
             
