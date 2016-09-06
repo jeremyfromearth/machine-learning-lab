@@ -13,6 +13,7 @@ class TermFreqInverseDocFreq:
     def __init__(self):
         self.terms = None
         self.term_frequency = None
+        self.term_id_to_term = None
         self.doc_id_to_index = None
         self.document_frequency = None
         self.inverse_document_frequency = None
@@ -24,12 +25,14 @@ class TermFreqInverseDocFreq:
         indices = []
         self.terms = {}
         self.doc_id_to_index = {}
+        self.term_id_to_term = {}
         self.term_count_over_iterations = []
         for doc_id, row in corpus.iterrows():
             text = str(row[text_column]).lower()
             terms = re.findall(r'\b[^\W\d_]+\b', text)
             for term in terms:
                 index = self.terms.setdefault(term, len(self.terms))
+                self.term_id_to_term.setdefault(index, term)
                 indices.append(index)
                 data.append(1)
             indptr.append(len(indices))
