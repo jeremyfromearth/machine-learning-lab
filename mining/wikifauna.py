@@ -10,7 +10,7 @@ limit = 120000
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
-article_search_space = set()
+article_search_space = set(['Koala'])
 
 # base urls
 wiki = 'https://en.wikipedia.org/'
@@ -35,6 +35,7 @@ except:
 # get a list of articles that we know have the 'Speciesbox' and seed the search space
 # a bit of a hack, ask for a list of articles from the api that contain a "SpeciesBox" template
 # this provides a great starting place for finding new species
+'''
 print('Mining with limit of {} new records'.format(limit))
 req = requests.get(api + '?action=query&list=embeddedin&eititle=Template:Speciesbox&eilimit=500&format=json');
 json = req.json()
@@ -43,6 +44,9 @@ if 'query' in json and 'embeddedin' in json['query']:
         if obj['title'] and obj['title']:# not in article_titles_searched:
             article_search_space.add(obj['title'])
 print('Initial search space has {} records to mine'.format(len(article_search_space)))
+'''
+
+
 
 # fetch wikipedia article and scrape out the infobox with taxonomy info
 def get_taxonomy_for_article(title):
