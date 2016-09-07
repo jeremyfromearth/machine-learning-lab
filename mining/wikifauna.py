@@ -10,7 +10,7 @@ limit = 120000
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
-article_search_space = set(['Koala'])
+article_search_space = set(['Kodiak bear'])
 
 # base urls
 wiki = 'https://en.wikipedia.org/'
@@ -64,7 +64,7 @@ def get_taxonomy_for_article(title):
                 classification = cells[1].text.lower()
                 classification = re.sub(r'\W+', '', classification)
                 taxonomy[label] = classification
-        if 'kingdom' in taxonomy and 'class' in taxonomy and 'species' in taxonomy and 'order' in taxonomy:
+        if all(label in taxonomy for label in ('kingdom', 'class', 'order')):
             if taxonomy['kingdom'] == 'animalia':
                 return taxonomy
 
