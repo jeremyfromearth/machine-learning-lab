@@ -101,3 +101,16 @@ class TermFreqInverseDocFreq:
     def get_global_rarity(self, term):
         term_index = self.terms[term]
         return self.inverse_document_frequency[0, term_index]
+
+    def get_sorted_terms_for_document(self, document_id):
+        terms = {}
+        doc_index = self.doc_id_to_index[document_id]
+        tf = self.tfidf[doc_index].toarray()
+        for index in range(len(tf[0])):
+            value = tf[0, index]
+            if value > 0.0:
+                terms[self.term_id_to_term[index]] = value
+            
+        result = pd.Series(terms)
+        result.sort(ascending=False)
+        return result
