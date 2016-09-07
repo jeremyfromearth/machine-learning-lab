@@ -10,7 +10,7 @@ limit = 120000
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
-article_search_space = set(['Kodiak bear'])
+article_search_space = set(['Giant_squid'])
 
 # base urls
 wiki = 'https://en.wikipedia.org/'
@@ -30,23 +30,6 @@ try:
 except:
     df = pd.DataFrame(columns=['title', 'page-id', 'text'] + taxonomic_rank)
     print('No existing data file found.')
-
-
-# get a list of articles that we know have the 'Speciesbox' and seed the search space
-# a bit of a hack, ask for a list of articles from the api that contain a "SpeciesBox" template
-# this provides a great starting place for finding new species
-'''
-print('Mining with limit of {} new records'.format(limit))
-req = requests.get(api + '?action=query&list=embeddedin&eititle=Template:Speciesbox&eilimit=500&format=json');
-json = req.json()
-if 'query' in json and 'embeddedin' in json['query']:
-    for obj in json['query']['embeddedin']:
-        if obj['title'] and obj['title']:# not in article_titles_searched:
-            article_search_space.add(obj['title'])
-print('Initial search space has {} records to mine'.format(len(article_search_space)))
-'''
-
-
 
 # fetch wikipedia article and scrape out the infobox with taxonomy info
 def get_taxonomy_for_article(title):
@@ -140,8 +123,12 @@ def go():
 if __name__ == '__main__':
     try: 
         go()
-    except (KeyboardInterrupt, Exception) as e:
+    except Exception as e:
+        print('Process interupted...')
+        print(e)
+    finally: 
         # merge the new data with the 
+        print('Saving')
         new_data = pd.DataFrame(new_articles)
         df = df.append(new_data)
         df = df.drop_duplicates()
