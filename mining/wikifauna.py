@@ -10,7 +10,7 @@ limit = 120000
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
-article_search_space = set(['Giant_squid'])
+article_search_space = set(['Spiny mouse'])
 
 # base urls
 wiki = 'https://en.wikipedia.org/'
@@ -128,9 +128,13 @@ if __name__ == '__main__':
         print(e)
     finally: 
         # merge the new data with the 
-        print('Saving')
-        new_data = pd.DataFrame(new_articles)
-        df = df.append(new_data)
-        df = df.drop_duplicates()
-        df.to_csv('./data/fauna.csv.gz', compression='gzip', index=False)
-        print('Completed with {} records'.format(len(df)))
+        if len(new_articles) > 0:
+            print('Saving')
+            new_data = pd.DataFrame(new_articles)
+            df = df.append(new_data)
+            df = df.drop_duplicates()
+            df.to_csv('./data/fauna.csv.gz', compression='gzip', index=False)
+            print('Completed with {} records'.format(len(df)))
+        else:
+            print('No new articles to save')
+

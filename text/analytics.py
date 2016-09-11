@@ -76,7 +76,20 @@ class TermFreqInverseDocFreq:
 
         # Create the tfidf
         self.tfidf = self.term_frequency.multiply(self.inverse_document_frequency)
+        print(type(self.tfidf))
 
+    def save(self, filename):
+        if self.tfidf is not None:
+            np.savez(filename, data=self.tfidf.data,
+                indices = self.tfidf.indices, 
+                indptr = self.tfidf.indptr, 
+                shape = self.tfidf.shape)
+                
+    def load(self, filename):
+        loader = np.load(filename)
+        self.tfidf = csr_matrix(
+                (loader['data'], loader['indices'], 
+                    loader['indptr']), shape=loader['shape'])
 
     # Get a single row from the tfidf
     def __getitem__(self, document_id):
