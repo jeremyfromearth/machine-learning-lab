@@ -76,7 +76,6 @@ class TermFreqInverseDocFreq:
 
         # Create the tfidf
         self.tfidf = self.term_frequency.multiply(self.inverse_document_frequency)
-        print(type(self.tfidf))
 
     def save(self, filename):
         if self.tfidf is not None:
@@ -93,10 +92,14 @@ class TermFreqInverseDocFreq:
 
     # Get a single row from the tfidf
     def __getitem__(self, document_id):
+        if document_id not in self.doc_id_to_index:
+            return None
         return self.tfidf[self.doc_id_to_index[document_id]]
 
     # Get the document frequency for a single term
     def get_doc_freq(self, term):
+        if term not in self.terms:
+            return 0
         term_index = self.terms[term]
         return self.document_frequency[0, term_index]
 
@@ -105,6 +108,8 @@ class TermFreqInverseDocFreq:
     # If normalized returns a floating point indicating the component 
     # Value of a unit vector representing all the terms in the supplied document
     def get_local_freq(self, document_id, term):
+        if document_id not in self.doc_id_to_index or term not in self.terms:
+            return 0.0
         doc_index = self.doc_id_to_index[document_id]
         term_index = self.terms[term]
         return self.term_frequency[doc_index, term_index]
@@ -112,11 +117,15 @@ class TermFreqInverseDocFreq:
     # Returns a score indicating the term's rarity within the corpus
     # The higher the value, the more rare the term
     def get_global_rarity(self, term):
+        if term not in self.terms: 
+            return 0.0
         term_index = self.terms[term]
         return self.inverse_document_frequency[0, term_index]
 
     def get_sorted_terms_for_document(self, document_id):
         terms = {}
+        if document_id not in self.doc_id_to_index:
+            return pd.Series()
         doc_index = self.doc_id_to_index[document_id]
         tf = self.tfidf[doc_index].toarray()
         for index in range(len(tf[0])):
