@@ -1,10 +1,11 @@
 import re
 import sys
+import pickle
 import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix, csc_matrix
 
-class TermFreqInverseDocFreq:
+class TFIDFModel:
     def __init__(self):
         self.terms = None
         self.term_frequency = None
@@ -66,24 +67,34 @@ class TermFreqInverseDocFreq:
         # 
         # doc-id, a,     as,     be,   bovid
         # 5234,   0.234, 0.0123, 0.01, 8.345
-        self.inverse_document_frequency = csr_matrix(np.apply_along_axis(\
+        self.inverse_document_frequency = csr_matrix(np.apply_along_axis(
             lambda x : np.log(self.term_frequency.shape[0] / (1 + x)), 1, self.document_frequency))
 
         # Create the tfidf
         self.tfidf = self.term_frequency.multiply(self.inverse_document_frequency)
 
     def save(self, filename):
-        if self.tfidf is not None:
-            np.savez(filename, data=self.tfidf.data,
-                indices = self.tfidf.indices, 
-                indptr = self.tfidf.indptr, 
-                shape = self.tfidf.shape)
+        with open(filename, 'wb') as f:
+            pickle.dump({
+                'tfidf': self.tfidf,
+                'terms': self.terms,
+                'term_frequency': self.term_frequency,
+                'doc_id_to_index': self.doc_id_to_index,
+                'term_id_to_term': self.term_id_to_term,
+                'inverse_document_frequency': self.inverse_document_frequency,
+                'document_frequency': self.document_frequency
+            }, f)
                 
     def load(self, filename):
-        loader = np.load(filename)
-        self.tfidf = csr_matrix(
-                (loader['data'], loader['indices'], 
-                    loader['indptr']), shape=loader['shape'])
+        with open(filename, 'rb') as f:
+            obj = pickle.load(f)
+            self.tfidf = obj['tfidf']
+            self.terms = obj['terms']
+            self.term_frequency = obj['term_frequency']
+            self.doc_id_to_index = obj['doc_id_to_index']
+            self.term_id_to_term = obj['term_id_to_term']
+            self.inverse_document_frequency = obj['inverse_document_frequency']
+            self.document_frequency = obj['document_frequency']
 
     # Get a single row from the tfidf
     def __getitem__(self, document_id):
