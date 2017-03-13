@@ -1,6 +1,36 @@
 import numpy as np
 from math import sqrt
 
+def squared_error_cost(w, x, y):
+    pass
+    
+class GradientDescent:
+    def __init__(self):
+        self.eta = 0.001
+        self.tolerance = 0.01
+        
+    def execute(self):
+        while cost > self.threshold:
+            # optimize the weights
+            pass
+        
+class LinearRegressionModel2:
+    def __init__(self):
+        self.weights = []
+        self.eta = 0.001
+        self.iterations = 0
+        self.cost_histogram = []
+        
+    def optimize(self, x, y):
+        data = np.concatenate((np.ones([x.shape[0], 1]), x), axis=1)
+        self.weights = np.zeros(x.shape[1])
+        
+    def compute_cost():
+        pass
+    
+    def predict():
+        pass
+
 class LinearRegressionModel:
     def __init__(self):
         self.weights = []
@@ -17,7 +47,7 @@ class LinearRegressionModel:
         Parameters
         ---------
         data : pd.DataFrame
-            N-1Dimensional array of data
+            N-Dimensional array of data
         features : list
             A list of strings indicating which columns represent features
         target : string
