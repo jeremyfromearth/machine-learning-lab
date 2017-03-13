@@ -1,18 +1,20 @@
 import numpy as np
 from math import sqrt
-
-def squared_error_cost(w, x, y):
-    pass
     
 class GradientDescent:
     def __init__(self):
+        self.complete = False
         self.eta = 0.001
-        self.tolerance = 0.01
+        self.mag = []
+        self.tolerance = 0.05
         
-    def execute(self):
-        while cost > self.threshold:
-            # optimize the weights
-            pass
+    def step(self, x, h, y):
+        e = h - y
+        d = np.dot(e, x)
+        m = sum(d) ** 2
+        self.mag.append(m)
+        self.complete = m < self.tolerance
+        return self.eta * (1 / x.shape[0]) * d
         
 class LinearRegressionModel2:
     def __init__(self):
@@ -20,16 +22,16 @@ class LinearRegressionModel2:
         self.eta = 0.001
         self.iterations = 0
         self.cost_histogram = []
+        self.optimizer = GradientDescent()
         
     def optimize(self, x, y):
-        data = np.concatenate((np.ones([x.shape[0], 1]), x), axis=1)
-        self.weights = np.zeros(x.shape[1])
-        
-    def compute_cost():
-        pass
+        X = np.concatenate((np.ones([x.shape[0], 1]), x), axis=1)
+        self.weights = np.zeros(X.shape[1])
+        while not self.optimizer.complete:
+            self.weights -= self.optimizer.step(X, self.predict(X), y)
     
-    def predict():
-        pass
+    def predict(self, x):
+        return np.dot(x, self.weights)
 
 class LinearRegressionModel:
     def __init__(self):
