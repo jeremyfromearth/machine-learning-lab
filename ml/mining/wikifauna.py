@@ -10,7 +10,7 @@ limit = 120000
 new_articles = []
 article_titles_saved = set()
 article_titles_searched = set()
-article_search_space = set(['Spiny mouse'])
+article_search_space = set(['rattlesnake'])
 
 # base urls
 wiki = 'https://en.wikipedia.org/'
@@ -24,7 +24,7 @@ taxonomic_rank = [
 
 # open the existing data file and add existing titles to list of previously searched titles
 try: 
-    df = pd.read_csv('./data/fauna.csv.gz', compression='gzip')
+    df = pd.read_csv('./ml/datasets/fauna.csv.gz', compression='gzip')
     article_titles_searched.update(df['title'].tolist())
     print('Opened existing data file with {} record(s)'.format(len(df)))
 except:
@@ -34,7 +34,7 @@ except:
 # fetch wikipedia article and scrape out the infobox with taxonomy info
 def get_taxonomy_for_article(title):
     r = requests.get(wiki + 'wiki/' + title)
-    soup = BeautifulSoup(r.content)
+    soup = BeautifulSoup(r.content, "lxml")
     infobox = soup.find_all("table", class_="infobox")
     if len(infobox) > 0:
         taxonomy = {}
@@ -123,9 +123,8 @@ def go():
 if __name__ == '__main__':
     try: 
         go()
-    except Exception as e:
+    except:
         print('Process interupted...')
-        print(e)
     finally: 
         # merge the new data with the 
         if len(new_articles) > 0:
@@ -133,7 +132,7 @@ if __name__ == '__main__':
             new_data = pd.DataFrame(new_articles)
             df = df.append(new_data)
             df = df.drop_duplicates()
-            df.to_csv('./data/fauna.csv.gz', compression='gzip', index=False)
+            df.to_csv('./ml/datasets/fauna.csv.gz', compression='gzip', index=False)
             print('Completed with {} records'.format(len(df)))
         else:
             print('No new articles to save')

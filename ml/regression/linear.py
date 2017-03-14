@@ -1,7 +1,7 @@
 import numpy as np
 from math import sqrt
     
-class GradientDescent:
+class SSEGradientDescent:
     def __init__(self):
         self.complete = False
         self.eta = 0.001
@@ -22,7 +22,7 @@ class LinearRegressionModel2:
         self.eta = 0.001
         self.iterations = 0
         self.cost_histogram = []
-        self.optimizer = GradientDescent()
+        self.optimizer = SSEGradientDescent()
         
     def optimize(self, x, y):
         X = np.concatenate((np.ones([x.shape[0], 1]), x), axis=1)
