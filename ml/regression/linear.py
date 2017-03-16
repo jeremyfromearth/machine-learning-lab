@@ -4,9 +4,9 @@ from math import sqrt
 class SSEGradientDescent:
     def __init__(self):
         self.complete = False
-        self.eta = 0.001
+        self.η = 0.001
         self.mag = []
-        self.tolerance = 0.05
+        self.tolerance = 0.1
         
     def step(self, x, h, y):
         e = h - y
@@ -14,30 +14,45 @@ class SSEGradientDescent:
         m = sum(d) ** 2
         self.mag.append(m)
         self.complete = m < self.tolerance
-        return self.eta * (1 / x.shape[0]) * d
+        return self.η * (1 / x.shape[0]) * d
+    
+class PassThruRegularization:
+    def step(self, m, η):
+        return 1.0
+    
+class L2Regularization:
+    def __init__(self):
+        self.λ = 0.05
+    
+    def step(self, m, η):
+        return 1 - (η * (self.λ / m))
         
 class LinearRegressionModel2:
     def __init__(self):
-        self.weights = []
-        self.eta = 0.001
+        self.params = []
         self.iterations = 0
         self.cost_histogram = []
-        self.optimizer = SSEGradientDescent()
+        self.optimization = SSEGradientDescent()
+        self.regularization = L2Regularization()
         
     def optimize(self, x, y):
-        X = np.concatenate((np.ones([x.shape[0], 1]), x), axis=1)
-        self.weights = np.zeros(X.shape[1])
-        while not self.optimizer.complete:
-            self.weights -= self.optimizer.step(X, self.predict(X), y)
+        m = x.shape[0]
+        n = x.shape[1] + 1
+        self.params = np.zeros(n)
+        X = np.concatenate((np.ones([m, 1]), x), axis=1)
+        while not self.optimization.complete:
+            p_update = self.optimization.step(X, self.predict(X), y)
+            r_update = self.regularization.step(m, self.optimization.η)
+            self.params = (self.params * r_update) - p_update
     
     def predict(self, x):
-        return np.dot(x, self.weights)
+        return np.dot(x, self.params)
 
 class LinearRegressionModel:
     def __init__(self):
         self.weights = []
         self.eta = 0.001
-        self.tolerance = 0.01
+        self.tolerance = 0.1
         self.iterations = 0
         self.rss = []
         self.gradient_magnitudes = []
