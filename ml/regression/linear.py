@@ -33,7 +33,7 @@ class LinearRegressionModel2:
         self.iterations = 0
         self.cost_histogram = []
         self.optimization = SSEGradientDescent()
-        self.regularization = L2Regularization()
+        self.regularization = PassThruRegularization()
         
     def optimize(self, x, y):
         m = x.shape[0]
@@ -43,7 +43,8 @@ class LinearRegressionModel2:
         while not self.optimization.complete:
             p_update = self.optimization.step(X, self.predict(X), y)
             r_update = self.regularization.step(m, self.optimization.η)
-            self.params = (self.params * r_update) - p_update
+            self.params[0] = self.params[0] - p_update[0]
+            self.params[1:] = self.params[1:] * r_update - p_update[1:]
     
     def predict(self, x):
         return np.dot(x, self.params)
