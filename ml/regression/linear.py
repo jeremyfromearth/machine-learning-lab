@@ -1,32 +1,8 @@
 import numpy as np
 from math import sqrt
-    
-class SSEGradientDescent:
-    def __init__(self):
-        self.complete = False
-        self.η = 0.001
-        self.mag = []
-        self.tolerance = 0.1
-        
-    def step(self, x, h, y):
-        e = h - y
-        d = np.dot(e, x)
-        m = sum(d) ** 2
-        self.mag.append(m)
-        self.complete = m < self.tolerance
-        return self.η * (1 / x.shape[0]) * d
-    
-class PassThruRegularization:
-    def step(self, m, η):
-        return 1.0
-    
-class L2Regularization:
-    def __init__(self):
-        self.λ = 0.05
-    
-    def step(self, m, η):
-        return 1 - (η * (self.λ / m))
-        
+from ml.optimization.gradient_descent import SSEGradientDescent
+from ml.optimization.regularization import PassThruRegularization
+
 class LinearRegressionModel2:
     def __init__(self):
         self.params = []
@@ -35,7 +11,7 @@ class LinearRegressionModel2:
         self.optimization = SSEGradientDescent()
         self.regularization = PassThruRegularization()
         
-    def optimize(self, x, y):
+    def learn(self, x, y):
         m = x.shape[0]
         n = x.shape[1] + 1
         self.params = np.zeros(n)
