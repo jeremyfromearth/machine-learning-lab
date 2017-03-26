@@ -14,7 +14,13 @@ class TFIDFModel:
         self.document_frequency = None
         self.inverse_document_frequency = None
         self.term_count_over_iterations = None
-
+    
+    @property
+    def shape(self):
+        if self.term_frequency is not None:
+            return self.term_frequency.shape
+        return np.array([0, 0])
+        
     def create(self, corpus, text_column, normalize = True):
         data = []
         indptr = [0]
