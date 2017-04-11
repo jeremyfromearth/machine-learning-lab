@@ -8,31 +8,31 @@ class LogisticRegressionModel:
         self.params = []
         self.optimization = SSEGradientDescent()
         self.regularization = L2Regularization()
+        self.cost_over_time = []
+        self.params_over_time = []
 
     def learn(self, x, y):
         m = x.shape[0]
         n = x.shape[1] + 1
+        self.cost_over_time = []
         self.params = np.zeros(n)
+        self.params_over_time = []
         X = np.concatenate((np.ones([m, 1]), x), axis=1)
         while not self.optimization.converged:
-            p_update = self.optimization.step(X, self.predict(X)[1], y)
+            prediction = self.predict(X)
+            self.cost_over_time.append(self.compute_cost(prediction[0], y))
+            p_update = self.optimization.step(X, prediction[0], y)
             r_update = self.regularization.step(m, self.optimization.learning_rate)
             self.params[0] = self.params[0] - p_update[0]
             self.params[1:] = self.params[1:] * r_update - p_update[1:]
-            self.params[1:] -= p_update[1:]
+            self.params_over_time.append(list(self.params))
             
     def predict(self, x):
-        z = np.dot(self.params, x.T)
+        z = np.dot(x, self.params)
         prob = sigmoid(z)
         return prob, prob.round()
     
-    def compute_cost(self, x, y):
-        # not necessary for computing gradients, but interesting for research
-        pass
-    
-    
-class MultiClassLogisticRegression:
-    def predict(self, x):
-        #return predicted class
-        pass
-    pass
+    def compute_cost(self, prediction, y):
+        element_wise_cost = y * np.log(prediction) + (1 - y) * np.log(1-prediction)
+        cost = -(1.0 / y.shape[0]) * np.sum(element_wise_cost)
+        return cost
