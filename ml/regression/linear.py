@@ -16,9 +16,9 @@ class LinearRegressionModel2:
         n = x.shape[1] + 1
         self.params = np.zeros(n)
         X = np.concatenate((np.ones([m, 1]), x), axis=1)
-        while not self.optimization.complete:
+        while not self.optimization.converged:
             p_update = self.optimization.step(X, self.predict(X), y)
-            r_update = self.regularization.step(m, self.optimization.η)
+            r_update = self.regularization.step(m, self.optimization.learning_rate)
             self.params[0] = self.params[0] - p_update[0]
             self.params[1:] = self.params[1:] * r_update - p_update[1:]
     
