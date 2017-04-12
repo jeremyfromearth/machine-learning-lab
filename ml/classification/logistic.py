@@ -9,7 +9,6 @@ class LogisticRegressionModel:
         self.optimization = SSEGradientDescent()
         self.regularization = L2Regularization()
         self.cost_over_time = []
-        self.params_over_time = []
         self.max_iterations = 5000
 
     def learn(self, x, y):
@@ -26,7 +25,6 @@ class LogisticRegressionModel:
             p_update = self.optimization.step(X, prediction[0], y, self.regularization, self.params)
             self.params[0] = self.params[0] - p_update[0]
             self.params[1:] = self.params[1:] - p_update[1:]
-            self.params_over_time.append(list(self.params))
             iters += 1
             
     def predict(self, x):
