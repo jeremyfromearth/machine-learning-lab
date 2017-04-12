@@ -22,9 +22,7 @@ class LogisticRegressionModel:
         while not self.optimization.converged and iters < self.max_iterations:
             prediction = self.predict(X)
             self.cost_over_time.append(self.compute_cost(prediction[0], y))
-            p_update = self.optimization.step(X, prediction[0], y, self.regularization, self.params)
-            self.params[0] = self.params[0] - p_update[0]
-            self.params[1:] = self.params[1:] - p_update[1:]
+            self.params -= self.optimization.step(X, prediction[0], y, self.regularization, self.params)
             iters += 1
             
     def predict(self, x):
