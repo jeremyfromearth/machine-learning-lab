@@ -6,18 +6,17 @@ from ml.optimization.regularization import L2Regularization
 class LogisticRegressionModel:
     def __init__(self):
         self.params = []
-        self.optimization = SSEGradientDescent()
-        self.regularization = L2Regularization()
         self.cost_over_time = []
         self.max_iterations = 5000
-
+        self.optimization = SSEGradientDescent()
+        self.regularization = L2Regularization()
+        
     def learn(self, x, y):
         iters = 0
         m = x.shape[0]
         n = x.shape[1] + 1
         self.cost_over_time = []
         self.params = np.zeros(n)
-        self.params_over_time = []
         X = np.concatenate((np.ones([m, 1]), x), axis=1)
         while not self.optimization.converged and iters < self.max_iterations:
             prediction = self.predict(X)
