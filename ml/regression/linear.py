@@ -1,29 +1,33 @@
 import numpy as np
 from math import sqrt
 from ml.optimization.gradient_descent import SSEGradientDescent
-from ml.optimization.regularization import PassThruRegularization
+from ml.optimization.regularization import L2Regularization
 
 class LinearRegressionModel2:
     def __init__(self):
         self.params = []
-        self.iterations = 0
-        self.cost_histogram = []
+        self.cost_over_time = []
+        self.max_iterations = 5000
         self.optimization = SSEGradientDescent()
-        self.regularization = PassThruRegularization()
+        self.regularization = L2Regularization()
         
     def learn(self, x, y):
+        iters = 0
         m = x.shape[0]
         n = x.shape[1] + 1
         self.params = np.zeros(n)
         X = np.concatenate((np.ones([m, 1]), x), axis=1)
-        while not self.optimization.converged:
-            p_update = self.optimization.step(X, self.predict(X), y)
-            r_update = self.regularization.step(m, self.optimization.learning_rate)
-            self.params[0] = self.params[0] - p_update[0]
-            self.params[1:] = self.params[1:] * r_update - p_update[1:]
-    
+        while not self.optimization.converged and iters < self.max_iterations:
+            prediction = self.predict(X)
+            self.cost_over_time.append(self.compute_cost(prediction, y))
+            self.params -= self.optimization.step(X, prediction, y, self.regularization, self.params)
+            iters += 1
+            
     def predict(self, x):
         return np.dot(x, self.params)
+    
+    def compute_cost(self, prediction, y):
+        return (1 / y.shape[0]) * np.sum((prediction - y) ** 2)
 
 class LinearRegressionModel:
     def __init__(self):
