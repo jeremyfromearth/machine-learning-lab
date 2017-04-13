@@ -1,4 +1,4 @@
-# M.L.
+# M.L. Workshop
 
 Welcome to my Machine Learning and Data Science workshop.
 
