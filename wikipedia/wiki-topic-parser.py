@@ -36,6 +36,6 @@ if len(sys.argv) > 1:
     filename = "-".join(title.strip().lower().split(' ')) + '.json'
     filepath = os.path.join(dirname, filename)
     with open(filepath, 'w') as f:
-        f.write(json.dumps(article))
+        f.write(json.dumps(article, indent=2))
 else:
     print("Please supply an article title")
