@@ -7,6 +7,7 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN conda create -n par && \
 	source activate par && \
 	conda install spacy && \
-	conda install jupyter
+	conda install jupyter && \
+	python -m spacy download en
 
 # jupyter notebook --ip=0.0.0.0  --allow-root --port 8000
