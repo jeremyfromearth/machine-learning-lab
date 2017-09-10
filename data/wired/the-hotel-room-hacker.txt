@@ -28,9 +28,6 @@ The flaw was obscure but simple: Each of the Onity locks had a port on its under
 
 Brocious, a round, long-haired, and patchily bearded hacker prodigy, had been hired by a small startup to reverse engineer the Onity locks and create a competing system. The company never got off the ground. But Brocious found something unexpected. The unique cryptographic key that triggered the “unlock” command on any particular Onity lock was stored not on the hotel’s portable programmer but in the lock itself—the equivalent of millions of keys hidden under millions of welcome mats in hotels around the globe.
 
-Police photographs of hotel hacking devices confiscated from Cashatt, including one hidden inside a sunglasses case.
-Police photographs of hotel hacking devices confiscated from Cashatt, including one hidden inside a sunglasses case.
-SCOTTSDALE POLICE DEPARTMENT
 With just $50 in hardware, including an Arduino board, some resistors, a battery, and a DC power plug, Brocious could build his own portable programmer, insert it into the port of an Onity lock, automatically retrieve the digital key from its internal memory, and trigger the door to unlock, all in a fraction of a second. “I plug it in, power it up, and the lock opens,” Brocious told me with wide-eyed enthusiasm when we first spoke that summer. To prove his claims, Brocious came to the Forbes magazine office, where I worked at the time, and showed me an Onity lock he’d bought from eBay. He inserted the plug of his homemade device, its wires squeezed inside a black plastic box, into the port on the bottom of his test lock. It whirred and a green light flashed as the lock’s bolt obediently retracted.
 
 A couple of weeks later, Brocious and I spent a day touring New York City to test his findings in the wild. We tried his Onity-cracking gadget in three hotels, ranging from midtown’s glamorous Waldorf Astoria to the less glamorous Holiday Inn in Gowanus, Brooklyn. (To avoid any actual felonies, Forbes paid for the rooms.) The technique worked on only one of the three targets, opening a door high in the atrium of the Marriott Marquis in Times Square. Brocious’ technique still needed some fine-tuning. But one out of three was enough: I published a story, revealing his discovery for the first time and warning of a potentially serious security flaw in one of the world’s most common locks.
@@ -143,4 +140,4 @@ She passed through a barbed-wire fence, parked her car, took a bus through the c
 
 The first question Cashatt asked, after that long separation, was what hotel his mother was staying in during her visit. She named it. He immediately asked whether the locks were the kind where the keycard went in horizontally, like this, or vertically, like this, miming the motion. She answered that it was the latter, like putting bread into a toaster.
 
-“Whatever you do,” Cashatt told his mother gravely, “don’t leave anything in that room.” 
+“Whatever you do,” Cashatt told his mother gravely, “don’t leave anything in that room.”
