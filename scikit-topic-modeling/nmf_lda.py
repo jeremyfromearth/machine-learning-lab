@@ -1,3 +1,4 @@
+import os
 import json
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -9,9 +10,9 @@ def display_topics(H, W, feature_names, documents, no_top_words, no_top_document
         print(" ".join([feature_names[i]
                         for i in topic.argsort()[:-no_top_words - 1:-1]]))
 		
-        top_doc_indices = np.argsort( W[:,topic_idx] )[::-1][0:no_top_documents]
-        for doc_index in top_doc_indices:
-            print(documents[doc_index])
+        top_doc_indices = np.argsort(W[:,topic_idx] )[::-1][0:no_top_documents]
+        #for doc_index in top_doc_indices:
+            #print(documents[doc_index])
 
 k_topics = 20
 n_features = 10000
@@ -20,7 +21,8 @@ n_top_terms = 10
 print('-----------------------------------')
 print('NMF')
 print('-----------------------------------')
-data = json.load(open('./data/ai-articles.json'))
+dirname = os.path.dirname(__file__)
+data = json.load(open(os.path.join(dirname, 'ai-articles.json')))
 tfidf_vectorizer = TfidfVectorizer(max_features=n_features, stop_words='english')
 tfidf = tfidf_vectorizer.fit_transform(data)
 tfidf_features = tfidf_vectorizer.get_feature_names()
@@ -65,7 +67,6 @@ def get_topics_for_terms(terms):
 
 get_topics_for_terms(['platform', 'ai', 'partnership', 'turing'])
 
-'''
 # LDA model is not nearly as coherent as the NFM 
 print('-----------------------------------')
 print('LDA')
@@ -75,7 +76,7 @@ tf = tf_vectorizer.fit_transform(data)
 tf_features = tf_vectorizer.get_feature_names()
 
 lda = LatentDirichletAllocation(
-    n_topics=k_topics, 
+    n_components=k_topics, 
     max_iter=5, 
     doc_topic_prior=0.4,
     topic_word_prior=0.5,
@@ -83,6 +84,7 @@ lda = LatentDirichletAllocation(
     learning_offset=10.0, random_state=0
 ).fit(tf)
 
-display_topics(lda, tf_features, n_top_terms)
-print(lda.transform(tf[0]))
-'''
+
+lda_W = nmf.transform(tfidf)
+lda_H = lda.components_
+display_topics(lda_H, lda_H, tf_features, data, 10, 1)
