@@ -18,7 +18,9 @@ class NeuralNetwork:
       self.nl = len(layers)
       for i in range(0, self.nl-1):
         self.b[i] = np.zeros((layers[i+1], 1))
-        self.w[i] = np.random.rand(layers[i], layers[i+1])
+        self.w[i] = np.random.rand(layers[i+1], layers[i])
+        self.z[i] = np.zeros((layers[i+1], 1))
+        self.a[i] = np.zeros((layers[i+1], 1))
 
     def __repr__(self):
       s = 'Weight Parameters:\n'
@@ -28,11 +30,13 @@ class NeuralNetwork:
       s += '\nBias Parameters:\n'
       for k, v in self.b.items():
         s += 'Layer: ' + str(k) + ' , Shape: ' + str(v.shape) + '\n' +  str(v) + '\n'
+
+      s += '\nActivations Parameters:\n'
+      for k, v in self.a.items():
+        s += 'Layer: ' + str(k) + ' , Shape: ' + str(v.shape) + '\n' +  str(v) + '\n'
       return s
 
     def forward(self, X):
-      # TODO: Implement mini batch
-      self.z = {}
       self.a[0] = np.copy(X)
       for i in range(1, self.nl):
         self.z[i] = np.dot(self.w[i-1], self.a[i-1])
@@ -42,6 +46,7 @@ class NeuralNetwork:
       pass
 
     def learn(self, X, Y, iters=1000):
+      # TODO: Implement minibatch
       for i in range(0, iters):
         self.forward(X)
         self.backward(Y)

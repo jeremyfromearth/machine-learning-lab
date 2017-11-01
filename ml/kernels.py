@@ -17,4 +17,4 @@ def triweight(x):
   return (35.0/32.0) * (1 - x**2) **2
 
 def relu(x):
-  return x if x > 0 else 0
+  return np.maximum(x, 0, x)
