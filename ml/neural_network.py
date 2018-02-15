@@ -1,8 +1,5 @@
 import numpy as np
-try:
-  from ml.kernels import sigmoid, relu
-except:
-  from kernels import sigmoid, relu
+from ml.kernels import sigmoid, relu
 
 class NeuralNetwork:
     def __init__(self, layers, rseed=0, activation=sigmoid):
@@ -39,6 +36,9 @@ class NeuralNetwork:
     def forward(self, X):
       self.a[0] = np.copy(X)
       for i in range(1, self.nl):
+        # TODO: Implement regularization
+          # Dropout
+          # Frobenius L2
         self.z[i] = np.dot(self.w[i-1], self.a[i-1])
         self.a[i] = relu(self.z[i])
 
@@ -51,12 +51,3 @@ class NeuralNetwork:
         self.forward(X)
         self.backward(Y)
       pass
-
-if __name__ == '__main__':
-    nn = NeuralNetwork(layers=[2, 6, 4, 1], rseed=32)
-    a = np.random.rand(3, 100)
-    w = np.random.rand(8, 3)
-    b = np.zeros([8, 1])
-    z = np.dot(w, a)  + b
-    print(nn)
-

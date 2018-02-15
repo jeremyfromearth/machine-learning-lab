@@ -87,3 +87,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.DS_Store
+intro/
+.ipynb_checkpoints/
+spacy/custom-ent-unit-model/
